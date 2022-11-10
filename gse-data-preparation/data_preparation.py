@@ -1,9 +1,15 @@
 import argparse
 import os
 import pandas as pd
+import shutil
+import yaml
 from sklearn.model_selection import train_test_split
 
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
+
+# Read config file
+with open("data_preparation_config.yaml", "r") as file:
+    config = yaml.load(file, Loader=yaml.FullLoader)
 
 
 class NoneDatasetError(Exception):
@@ -54,6 +60,16 @@ class DatasetSizeError(Exception):
     
     def __str__(self):
         return f"DatasetSizeError: The number of images should be equal to number of labels/annotations. Your dataset contains {self.num_images} images and {self.num_labels} labels"
+
+
+class NumberOfClassesError(Exception):
+    """Raise if number of classes is less than 2"""
+    def __init__(self, num_classes):
+        super().__init__(num_classes)
+        self.num_classes = num_classes
+
+    def __str__(self):
+        return f"Number of classes is {self.num_classes}. You need to define atleast 2 classes!"
 
 
 class DatasetNamingError(Exception):
@@ -111,7 +127,7 @@ def validate_arguments(data_directory, img_directory, lbl_directory, cls_file, v
         raise ValidationSizeError(float(valid_size))    
 
 
-def validate_dataset(data_directory, img_directory, lbl_directory, img_formats):
+def validate_dataset(data_directory, img_directory, lbl_directory, img_formats, class_file):
     """Validates the input dataset
     
     Checks if number of images is same as number of labels.
@@ -152,7 +168,17 @@ def validate_dataset(data_directory, img_directory, lbl_directory, img_formats):
         if label_file not in label_list:
             raise DatasetNamingError(image)
     
-    return image_list, label_list
+    class_list = []
+    if ".csv" in class_file:
+        class_list = str(list(pd.read_csv(class_file)['classes']))
+    else: 
+        class_list = open(class_file).readlines()
+        class_list = [class_name.rstrip('\n') for class_name in class_list]
+    
+    if len(class_list) < 2:
+        raise NumberOfClassesError(len(class_list))
+    
+    return image_list, label_list, class_list
 
 
 def train_valid_split(images, labels, valid_size):
@@ -171,15 +197,46 @@ def train_valid_split(images, labels, valid_size):
     """
     images.sort()
     labels.sort()
-
     train_images, val_images, train_labels, val_labels = train_test_split(images, labels, test_size=valid_size, random_state=1)
-
     return train_images, val_images, train_labels, val_labels
 
 
-def prepare_dataset(data_directory, img_directory, lbl_directory, train_images, val_images, train_labels, val_labels):
-    """Creates training and validation directories and moves these to the working directory"""
-    pass
+def prepare_dataset(data_directory, img_directory, lbl_directory, output_dir, train_images, val_images, train_labels, val_labels):
+    """Creates training and validation directories and moves these to the output directory"""
+    train_img_dst = os.path.join(output_dir, config['training_images_dir'])
+    train_lbl_dst = os.path.join(output_dir, config['training_labels_dir'])
+    valid_img_dst = os.path.join(output_dir, config['validation_images_dir'])
+    valid_lbl_dst = os.path.join(output_dir, config['validation_labels_dir'])
+    os.makedirs(train_img_dst, exist_ok=True)
+    os.makedirs(train_lbl_dst, exist_ok=True)
+    os.makedirs(valid_img_dst, exist_ok=True)
+    os.makedirs(valid_lbl_dst, exist_ok=True)
+
+    img_src, lbl_src = img_directory, lbl_directory
+    if data_directory.lower() != "none":
+        img_src, lbl_src = data_directory, data_directory
+
+    for i in range(len(train_images)):
+        shutil.copy(os.path.join(img_src, train_images[i]), train_img_dst)
+        shutil.copy(os.path.join(lbl_src, train_labels[i]), train_lbl_dst)
+
+    for i in range(len(val_images)):
+        shutil.copy(os.path.join(img_src, val_images[i]), valid_img_dst)
+        shutil.copy(os.path.join(lbl_src, val_labels[i]), valid_lbl_dst)
+
+
+def create_dataset_config(class_list, output_dir):
+    """Creates a dataset configuration (.yaml) file in the output directory"""
+    yaml_file = open(os.path.join(output_dir, config['dataset_yaml_file']), 'w+')
+
+    # Define keys for paths to training and validation sets
+    yaml_file.write(config['train_key'] + ": " + os.path.join(output_dir, config['training_images_dir']) + "/" + "\n")
+    yaml_file.write(config['valid_key'] + ": " + os.path.join(output_dir, config['validation_images_dir']) + "/" + "\n")
+
+    # Define keys for number of classes and class names
+    yaml_file.write(config['num_classes'] + ": " + str(len(class_list)) + "\n")
+    yaml_file.write(config['class_names'] + ": " + str(class_list))
+    yaml_file.close()
 
 
 def data_preparation_main():
@@ -188,10 +245,16 @@ def data_preparation_main():
     args = parse_parameters()
     validate_arguments(args.data_dir, args.image_dir, args.label_dir, args.class_file, args.valid_size)
     image_formats = ["bmp", "jpg", "jpeg", "png", "tif", "tiff", "dng", "webp", "mpo"]
-    images, labels = validate_dataset(args.data_dir, args.image_dir, args.label_dir, image_formats)
+    images, labels, classes = validate_dataset(args.data_dir, args.image_dir, args.label_dir, image_formats, args.class_file)
 
     # Split dataset into training and validation sets
     train_images, valid_images, train_labels, valid_labels = train_valid_split(images, labels, args.valid_size)
+
+    # Move training and validation datasets to output directory
+    prepare_dataset(args.data_dir, args.image_dir, args.label_dir, args.output_dir, train_images, valid_images, train_labels, valid_labels)
+
+    # Create a dataset configuration (.yaml) file
+    create_dataset_config(classes, args.output_dir)
 
 
 if __name__ == "__main__":
