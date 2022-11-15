@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
 # Read config file
-with open("data_preparation_config.yaml", "r") as file:
+with open(os.path.dirname(os.path.abspath(__file__)) + "/data_preparation_config.yaml", "r") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
 
@@ -69,7 +69,7 @@ class NumberOfClassesError(Exception):
         self.num_classes = num_classes
 
     def __str__(self):
-        return f"Number of classes is {self.num_classes}. You need to define atleast 2 classes!"
+        return f"NumberOfClassesError: Number of classes is {self.num_classes}. You need to define atleast 2 classes!"
 
 
 class DatasetNamingError(Exception):
@@ -127,37 +127,36 @@ def validate_arguments(data_directory, img_directory, lbl_directory, cls_file, v
         raise ValidationSizeError(float(valid_size))    
 
 
-def validate_dataset(data_directory, img_directory, lbl_directory, img_formats, class_file):
+def validate_dataset(data_dir_list, img_dir_list, lbl_dir_list, img_formats, class_list):
     """Validates the input dataset
     
     Checks if number of images is same as number of labels.
     Raises an error if an image does not have a corresponding label/annotation file.
 
     Args:
-        data_directory: The directory containing both images as well as labels
-        img_directory: The directory containing just images
-        lbl_directory: The directory containing just labels/annotations
+        data_dir_list:  list containing names of all files present in the data directory
+        img_dir_list: list containing names of all files present in the image directory
+        lbl_dir_list: list containing names of all files present in the label directory
         img_formats: A list containing image file formats compatible with YOLOv5
+        class_list: A list containing all classes/categories in the dataset
     
     Raises:
         DatasetSizeError: If number of images is not equal to number of label/annotation files
         DatasetNamingError: If an image does not have a label/annotation file associated with it
+        NumberOfClassesError: If number of classes is less than 1
     
     Returns:
         image_list: a list containing filenames for images
-        label_list: a list containing filenames for labels/annotations 
+        label_list: a list containing filenames for labels/annotations
     """
     image_list, label_list = [], []
 
-    if data_directory.lower() != "none":
-        file_list = os.listdir(data_directory)
-        image_list = [file for file in file_list if any(fmt in file for fmt in img_formats)]
-        label_list = [file for file in file_list if ".txt" in file]
+    if len(data_dir_list):
+        image_list = [file for file in data_dir_list if any(fmt in file for fmt in img_formats)]
+        label_list = [file for file in data_dir_list if ".txt" in file]
     else:
-        image_files = os.listdir(img_directory)
-        label_files = os.listdir(lbl_directory)
-        image_list = [file for file in image_files if any(fmt in file for fmt in img_formats)]
-        label_list = [file for file in label_files if ".txt" in file]
+        image_list = [file for file in img_dir_list if any(fmt in file for fmt in img_formats)]
+        label_list = [file for file in lbl_dir_list if ".txt" in file]
 
     if len(image_list) != len(label_list):
         raise DatasetSizeError(len(image_list), len(label_list))
@@ -167,18 +166,11 @@ def validate_dataset(data_directory, img_directory, lbl_directory, img_formats, 
         label_file = image_name + ".txt"
         if label_file not in label_list:
             raise DatasetNamingError(image)
-    
-    class_list = []
-    if ".csv" in class_file:
-        class_list = str(list(pd.read_csv(class_file)['classes']))
-    else: 
-        class_list = open(class_file).readlines()
-        class_list = [class_name.rstrip('\n') for class_name in class_list]
-    
+        
     if len(class_list) < 2:
         raise NumberOfClassesError(len(class_list))
     
-    return image_list, label_list, class_list
+    return image_list, label_list
 
 
 def train_valid_split(images, labels, valid_size):
@@ -245,16 +237,34 @@ def data_preparation_main():
     args = parse_parameters()
     validate_arguments(args.data_dir, args.image_dir, args.label_dir, args.class_file, args.valid_size)
     image_formats = ["bmp", "jpg", "jpeg", "png", "tif", "tiff", "dng", "webp", "mpo"]
-    images, labels, classes = validate_dataset(args.data_dir, args.image_dir, args.label_dir, image_formats, args.class_file)
+
+    # Create lists for images, labels and classes
+    data_dir_contents, img_dir_contents, lbl_dir_contents = [], [], []
+    if args.data_dir.lower() != "none":
+        data_dir_contents = os.listdir(args.data_dir)
+    else:
+        img_dir_contents = os.listdir(args.image_dir)
+        lbl_dir_contents = os.listdir(args.label_dir)
+    
+    class_list = []
+    if ".csv" in args.class_file:
+        class_list = list(pd.read_csv(args.class_file)['classes'])
+    else:
+        class_file = open(args.class_file)
+        class_list = class_file.readlines()
+        class_list = [class_name.rstrip('\n') for class_name in class_list]
+        class_file.close()
+
+    images, labels = validate_dataset(data_dir_contents, img_dir_contents, lbl_dir_contents, image_formats, class_list)
 
     # Split dataset into training and validation sets
-    train_images, valid_images, train_labels, valid_labels = train_valid_split(images, labels, args.valid_size)
+    train_images, valid_images, train_labels, valid_labels = train_valid_split(images, labels, float(args.valid_size))
 
     # Move training and validation datasets to output directory
     prepare_dataset(args.data_dir, args.image_dir, args.label_dir, args.output_dir, train_images, valid_images, train_labels, valid_labels)
 
-    # Create a dataset configuration (.yaml) file
-    create_dataset_config(classes, args.output_dir)
+    # Create a dataset configuration (.yaml) file in output directory
+    create_dataset_config(class_list, args.output_dir)
 
 
 if __name__ == "__main__":

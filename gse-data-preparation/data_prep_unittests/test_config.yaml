@@ -1,0 +1,6 @@
+dataset_dir: /test_dataset
+dataset_full: /test_dataset/test_full
+dataset_images: /test_dataset/test_images
+dataset_labels: /test_dataset/test_labels
+classes_txt: /test_dataset/classes.txt
+classes_csv: /test_dataset/classes.csv
