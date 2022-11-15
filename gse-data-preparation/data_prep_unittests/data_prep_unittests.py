@@ -3,7 +3,6 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import pandas as pd
 import shutil
 import unittest
 import yaml
@@ -40,7 +39,7 @@ class TestDataPreparation(unittest.TestCase):
         self.lbl_list_v2 = ["1.txt", "2.txt", "3.txt", "4.txt", "6.txt"]
         self.class_list_v1 = []
 
-        # Define input arguments and expected answers for train_valid_split
+        # Define input arguments and expected answers for train_valid_split function
         self.valid_size = 0.4
         self.num_train = 3
         self.num_valid = 2
@@ -110,3 +109,4 @@ class TrainValidSplit(TestDataPreparation):
         self.assertIsInstance(train_lbls, list)
         self.assertIsInstance(val_lbls, list)
         self.assertEqual([len(train_imgs), len(val_imgs), len(train_lbls), len(val_lbls)], [self.num_train, self.num_valid, self.num_train, self.num_valid])
+        
