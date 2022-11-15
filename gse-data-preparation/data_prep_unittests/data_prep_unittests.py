@@ -109,4 +109,3 @@ class TrainValidSplit(TestDataPreparation):
         self.assertIsInstance(train_lbls, list)
         self.assertIsInstance(val_lbls, list)
         self.assertEqual([len(train_imgs), len(val_imgs), len(train_lbls), len(val_lbls)], [self.num_train, self.num_valid, self.num_train, self.num_valid])
-        

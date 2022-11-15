@@ -69,7 +69,7 @@ class NumberOfClassesError(Exception):
         self.num_classes = num_classes
 
     def __str__(self):
-        return f"NumberOfClassesError: Number of classes is {self.num_classes}. You need to define atleast 2 classes!"
+        return f"NumberOfClassesError: Number of classes is {self.num_classes}. You need to define atleast 1 class!"
 
 
 class DatasetNamingError(Exception):
@@ -167,7 +167,7 @@ def validate_dataset(data_dir_list, img_dir_list, lbl_dir_list, img_formats, cla
         if label_file not in label_list:
             raise DatasetNamingError(image)
         
-    if len(class_list) < 2:
+    if len(class_list) < 1:
         raise NumberOfClassesError(len(class_list))
     
     return image_list, label_list
@@ -269,3 +269,4 @@ def data_preparation_main():
 
 if __name__ == "__main__":
     data_preparation_main()
+    
