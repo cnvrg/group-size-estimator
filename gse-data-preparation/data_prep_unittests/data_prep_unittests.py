@@ -3,11 +3,13 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import shutil
+import numpy as np
 import unittest
 import yaml
 from data_preparation import NoneDatasetError, DatasetPathError, ClassFileFormatError, ValidationSizeError, DatasetSizeError, DatasetNamingError, NumberOfClassesError
 from data_preparation import validate_arguments, validate_dataset, train_valid_split
+
+np.random.seed(2)
 
 
 class TestDataPreparation(unittest.TestCase):
@@ -43,6 +45,10 @@ class TestDataPreparation(unittest.TestCase):
         self.valid_size = 0.4
         self.num_train = 3
         self.num_valid = 2
+        self.train_imgs = ["3.jpg", "1.jpg", "4.jpg"]
+        self.valid_imgs = ["2.jpg", "5.jpg"]
+        self.train_lbls = ["3.txt", "1.txt", "4.txt"]
+        self.valid_lbls = ["2.txt", "5.txt"]
 
 
 class TestValidateArguments(TestDataPreparation):
@@ -109,3 +115,12 @@ class TrainValidSplit(TestDataPreparation):
         self.assertIsInstance(train_lbls, list)
         self.assertIsInstance(val_lbls, list)
         self.assertEqual([len(train_imgs), len(val_imgs), len(train_lbls), len(val_lbls)], [self.num_train, self.num_valid, self.num_train, self.num_valid])
+
+    def test_exact_output(self):
+        """Checks if the training and validation sets are generated as expected"""
+        train_imgs, val_imgs, train_lbls, val_lbls = train_valid_split(self.img_list, self.lbl_list, self.valid_size)
+        self.assertEqual(train_imgs, self.train_imgs)
+        self.assertEqual(val_imgs, self.valid_imgs)
+        self.assertEqual(train_lbls, self.train_lbls)
+        self.assertEqual(val_lbls, self.valid_lbls)
+        

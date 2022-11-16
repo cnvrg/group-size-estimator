@@ -7,10 +7,6 @@ from sklearn.model_selection import train_test_split
 
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
-# Read config file
-with open(os.path.dirname(os.path.abspath(__file__)) + "/data_preparation_config.yaml", "r") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
-
 
 class NoneDatasetError(Exception):
     """Raise if data directory, images directory and labels directory are all None"""
@@ -189,16 +185,16 @@ def train_valid_split(images, labels, valid_size):
     """
     images.sort()
     labels.sort()
-    train_images, val_images, train_labels, val_labels = train_test_split(images, labels, test_size=valid_size, random_state=1)
+    train_images, val_images, train_labels, val_labels = train_test_split(images, labels, test_size=float(valid_size), random_state=42)
     return train_images, val_images, train_labels, val_labels
 
 
-def prepare_dataset(data_directory, img_directory, lbl_directory, output_dir, train_images, val_images, train_labels, val_labels):
+def prepare_dataset(data_directory, img_directory, lbl_directory, output_dir, train_images, val_images, train_labels, val_labels, config_dict):
     """Creates training and validation directories and moves these to the output directory"""
-    train_img_dst = os.path.join(output_dir, config['training_images_dir'])
-    train_lbl_dst = os.path.join(output_dir, config['training_labels_dir'])
-    valid_img_dst = os.path.join(output_dir, config['validation_images_dir'])
-    valid_lbl_dst = os.path.join(output_dir, config['validation_labels_dir'])
+    train_img_dst = os.path.join(output_dir, config_dict['training_images_dir'])
+    train_lbl_dst = os.path.join(output_dir, config_dict['training_labels_dir'])
+    valid_img_dst = os.path.join(output_dir, config_dict['validation_images_dir'])
+    valid_lbl_dst = os.path.join(output_dir, config_dict['validation_labels_dir'])
     os.makedirs(train_img_dst, exist_ok=True)
     os.makedirs(train_lbl_dst, exist_ok=True)
     os.makedirs(valid_img_dst, exist_ok=True)
@@ -209,25 +205,25 @@ def prepare_dataset(data_directory, img_directory, lbl_directory, output_dir, tr
         img_src, lbl_src = data_directory, data_directory
 
     for i in range(len(train_images)):
-        shutil.copy(os.path.join(img_src, train_images[i]), train_img_dst)
-        shutil.copy(os.path.join(lbl_src, train_labels[i]), train_lbl_dst)
+        shutil.move(os.path.join(img_src, train_images[i]), train_img_dst)
+        shutil.move(os.path.join(lbl_src, train_labels[i]), train_lbl_dst)
 
     for i in range(len(val_images)):
-        shutil.copy(os.path.join(img_src, val_images[i]), valid_img_dst)
-        shutil.copy(os.path.join(lbl_src, val_labels[i]), valid_lbl_dst)
+        shutil.move(os.path.join(img_src, val_images[i]), valid_img_dst)
+        shutil.move(os.path.join(lbl_src, val_labels[i]), valid_lbl_dst)
 
 
-def create_dataset_config(class_list, output_dir):
+def create_dataset_config(class_list, output_dir, config_dict):
     """Creates a dataset configuration (.yaml) file in the output directory"""
-    yaml_file = open(os.path.join(output_dir, config['dataset_yaml_file']), 'w+')
+    yaml_file = open(os.path.join(output_dir, config_dict['dataset_yaml_file']), 'w+')
 
     # Define keys for paths to training and validation sets
-    yaml_file.write(config['train_key'] + ": " + os.path.join(output_dir, config['training_images_dir']) + "/" + "\n")
-    yaml_file.write(config['valid_key'] + ": " + os.path.join(output_dir, config['validation_images_dir']) + "/" + "\n")
+    yaml_file.write(f"{config_dict['train_key']}: {os.path.join(output_dir, config_dict['training_images_dir'])}/\n")
+    yaml_file.write(f"{config_dict['valid_key']}: {os.path.join(output_dir, config_dict['validation_images_dir'])}/\n")
 
     # Define keys for number of classes and class names
-    yaml_file.write(config['num_classes'] + ": " + str(len(class_list)) + "\n")
-    yaml_file.write(config['class_names'] + ": " + str(class_list))
+    yaml_file.write(f"{config_dict['num_classes']}: {len(class_list)}\n")
+    yaml_file.write(f"{config_dict['class_names']}: {class_list}\n")
     yaml_file.close()
 
 
@@ -237,6 +233,10 @@ def data_preparation_main():
     args = parse_parameters()
     validate_arguments(args.data_dir, args.image_dir, args.label_dir, args.class_file, args.valid_size)
     image_formats = ["bmp", "jpg", "jpeg", "png", "tif", "tiff", "dng", "webp", "mpo"]
+
+    # Read config file
+    with open(os.path.dirname(os.path.abspath(__file__)) + "/data_preparation_config.yaml", "r") as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
 
     # Create lists for images, labels and classes
     data_dir_contents, img_dir_contents, lbl_dir_contents = [], [], []
@@ -258,15 +258,14 @@ def data_preparation_main():
     images, labels = validate_dataset(data_dir_contents, img_dir_contents, lbl_dir_contents, image_formats, class_list)
 
     # Split dataset into training and validation sets
-    train_images, valid_images, train_labels, valid_labels = train_valid_split(images, labels, float(args.valid_size))
+    train_images, valid_images, train_labels, valid_labels = train_valid_split(images, labels, args.valid_size)
 
     # Move training and validation datasets to output directory
-    prepare_dataset(args.data_dir, args.image_dir, args.label_dir, args.output_dir, train_images, valid_images, train_labels, valid_labels)
+    prepare_dataset(args.data_dir, args.image_dir, args.label_dir, args.output_dir, train_images, valid_images, train_labels, valid_labels, config)
 
     # Create a dataset configuration (.yaml) file in output directory
-    create_dataset_config(class_list, args.output_dir)
+    create_dataset_config(class_list, args.output_dir, config)
 
 
 if __name__ == "__main__":
     data_preparation_main()
-    
