@@ -84,5 +84,6 @@ The GSE Preprocess library generates the following outputs:
 - All these files can be used by subsequent libraries in the Blueprint.
 
 ## Troubleshooting
+- Ensure that every image file (.jpg, .png etc.) in the raw dataset has a corresponding annotations/labels file (.txt) with the same name. For eg:- 1.jpg -> 1.txt, img_100.png -> img_100.txt
 - Ensure the input arguments to the library are valid and accurate.
 - Check the experiment's Artifacts section to confirm the library has generated the output files/directories.
