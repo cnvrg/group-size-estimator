@@ -131,7 +131,7 @@ def parse_parameters():  # pragma: no cover
         action="store",
         dest="valid_size",
         required=False,
-        default=0.1,
+        default=0.3,
         help="""--- Size of validation set as percentage of entire dataset ---""",
     )
     return parser.parse_args()
