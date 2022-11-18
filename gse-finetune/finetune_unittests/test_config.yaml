@@ -1,0 +1,3 @@
+images_loc: ../data
+labels_loc: ../data
+config_loc: ../data/dataset.yaml

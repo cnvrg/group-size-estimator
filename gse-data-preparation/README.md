@@ -52,7 +52,7 @@ OR
 Refer to the following sample command:
 
 ```bash
-python data_preparation.py --data_dir None --image_dir /input/s3_connector/basedir/images  --label_dir /input/s3_connector/base_dir/labels --class_file /input/s3_connector/base_dir/classes.txt --valid_size 0.2
+python data_preparation.py --data_dir None --image_dir /input/s3_connector/basedir/images  --label_dir /input/s3_connector/basedir/labels --class_file /input/s3_connector/base_dir/classes.txt --valid_size 0.2
 ```
 
 ## Outputs
