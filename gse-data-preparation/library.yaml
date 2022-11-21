@@ -47,4 +47,5 @@ arguments:
     values: []
   - key: valid_size
     type: categorical
-    values: '0.3'
+    values: 
+      - '0.3'
