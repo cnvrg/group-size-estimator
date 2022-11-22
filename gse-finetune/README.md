@@ -55,7 +55,7 @@ python finetune.py --model_weights yolov5s.pt --img_size 640 --batch_size 16 --n
 
 ## Outputs
 The GSE Finetuning library generates the following outputs:
-- The library generates the follwoing directory structure.
+- The library generates the following directory structure.
 ```
 | - outputdir
     | - runs

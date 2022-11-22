@@ -4,3 +4,4 @@
 *dataset.yaml
 __pycache__
 *runs
+*.pt
