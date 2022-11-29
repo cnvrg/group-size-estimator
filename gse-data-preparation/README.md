@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-The GSE Data Preparation library allows the user to create a dataset that is compatible with the YOLOv5 model. It accepts arguments such as paths to data/image/label directories, performs train-validation splitting and creates a dataset configuration file for training the model. As part of the [Group Size Estimator Blueprint](), this library processes raw data and makes it accessible to subsequent libraries in the Blueprint.
+The GSE Data Preparation library allows the user to create a dataset that is compatible with the YOLOv5 model. It accepts arguments such as paths to data/image/label directories, performs train-validation splitting and creates a dataset configuration file for training the model. As part of the [GSE Training Blueprints](), this library processes raw data and makes it accessible to subsequent libraries in the Blueprint.
 
 Click [here]() for more information on this library.
 

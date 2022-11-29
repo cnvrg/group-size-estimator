@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-The GSE Finetuning library lets the user finetune a pre-trained [YOLOv5](https://github.com/ultralytics/yolov5) model on custom data. End-users can pass hyperparameters like initial model weights, number of epochs, batch size etc. to finetune the model. As part of the [Group Size Estimator Blueprint](), this library reads the dataset prepared by the previous library, use it to finetune the model and then saves the model for running inference and batch prediction.
+The GSE Finetuning library lets the user finetune a pre-trained [YOLOv5](https://github.com/ultralytics/yolov5) model on custom data. End-users can pass hyperparameters like initial model weights, number of epochs, batch size etc. to finetune the model. As part of the [GSE Training Blueprints](), this library reads the dataset prepared by the previous library, use it to finetune the model and then saves the model for running inference and batch prediction.
 
 Click [here]() for more information on this library.
 

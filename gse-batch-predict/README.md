@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-The GSE Batch Predict library enables the user to perform object counting on a set of test images. This library acccepts input arguments like path to the directory containing test images, the size of test images and the confidence value to consider while making final predictions. As part of the [Group Size Estimator Blueprint](), it uses a trained model to make predictions and finally writes the results to the output directory.
+The GSE Batch Predict library enables the user to perform object counting on a set of test images. This library acccepts input arguments like path to the directory containing test images, the size of test images and the confidence value to consider while making final predictions. As part of the [GSE Training Blueprints](), it uses a trained model to make predictions and finally writes the results to the output directory.
 
 Click [here]() for more information on this library.
 

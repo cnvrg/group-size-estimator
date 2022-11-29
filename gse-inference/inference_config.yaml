@@ -1,0 +1,3 @@
+trained_model_path: /input/finetuning/runs/train/exp/weights/best.pt
+standalone_model_path: ./yolov5s.pt
+temp_file_name: ./test
