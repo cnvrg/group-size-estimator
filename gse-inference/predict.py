@@ -34,7 +34,7 @@ def predict(data):
     Returns:
         response: dictionary containing the prediction/results
     """
-    # Perfrom base 64 conversion on uploaded datas
+    # Perfrom base 64 conversion on uploaded data
     decoded_img = base64.b64decode(data["img"])
 
     # Convert buffer to numpy array and save uploaded image

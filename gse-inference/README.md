@@ -9,7 +9,7 @@ Click [here]() for more information on this library.
 
 ## Library Flow
 The following list outlines this library's high-level flow:
-- The user uploads a test image from his local file system.
+- The user uploads a test image from their local file system.
 - The model on the backend makes a prediction and displays the detected objects as well as object counts to the user.
 
 ## Inputs
