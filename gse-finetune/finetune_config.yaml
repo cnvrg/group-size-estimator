@@ -1,6 +1,6 @@
-images_loc: ../gse-data-preparation/images
-labels_loc: ../gse-data-preparation/labels
-config_loc: ../gse-data-preparation/dataset.yaml
+images_loc: /input/data_preparation/images
+labels_loc: /input/data_preparation/labels
+config_loc: /input/data_preparation/dataset.yaml
 move_dest: ./
 config_loc_new: ./dataset.yaml
 project_name: /runs/train

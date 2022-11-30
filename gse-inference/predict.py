@@ -38,7 +38,7 @@ def predict(data):
     decoded_img = base64.b64decode(data["img"])
 
     # Convert buffer to numpy array and save uploaded image
-    file_ext = magic.from_buffer(decoded_img, mime=True).split('/')[-1]
+    file_ext = magic.from_buffer(decoded_img, mime=True).split("/")[-1]
     nparr = np.fromstring(decoded_img, np.uint8)
     test_img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
     savepath = config["test_file_name"] + f".{file_ext}"
@@ -58,5 +58,5 @@ def predict(data):
             response["output"] += obj_info[classname]
             count_dict = {"object": classname, "object_count": obj_counts[classname]}
             response.append(count_dict)
-    
+
     return response

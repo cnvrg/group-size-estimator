@@ -1,4 +1,2 @@
-model_loc: ../gse-finetune/runs/train/exp/weights/best.pt
-move_dest: ./
-model_loc_new: ./best.pt
+model_loc: /input/finetuning/runs/train/exp/weights/best.pt
 project_name: /runs/detect

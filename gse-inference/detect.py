@@ -218,7 +218,7 @@ def run(
                         )  # label format
                         with open(f"{txt_path}.txt", "a") as f:
                             f.write(("%g " * len(line)).rstrip() % line + "\n")
-                        
+
                         # Store detected object info
                         detection["class"] = names[int(line[0])]
                         detection["conf"] = round(float(conf), 2)
@@ -323,7 +323,7 @@ def run(
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
-    
+
     return result
 
 
