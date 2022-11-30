@@ -40,14 +40,6 @@ def parse_parameters():  # pragma: no cover
         help="""--- Pre-trained model weights ---""",
     )
     parser.add_argument(
-        "--img_size",
-        action="store",
-        dest="img_size",
-        required=False,
-        default=640,
-        help="""--- Size of images for training and validation. Images will be resized to this size ---""",
-    )
-    parser.add_argument(
         "--batch_size",
         action="store",
         dest="batch_size",
@@ -125,7 +117,7 @@ def finetune_main():  # pragma: no cover
     # Run YOLOv5 training script
     dataset_yaml_loc = config_dict["config_loc_new"]
     project_loc = args.output_dir + config_dict["project_name"]
-    command = f"python train.py --weights {args.model_weights} --img {args.img_size} --batch {args.batch_size} --data {dataset_yaml_loc} --project {project_loc}"
+    command = f"python train.py --weights {args.model_weights} --batch {args.batch_size} --epochs {args.num_epochs} --data {dataset_yaml_loc} --project {project_loc}"
     os.system(command)
 
 

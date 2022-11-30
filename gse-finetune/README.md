@@ -40,7 +40,6 @@ This library relies on the dataset directories and config file created by the Da
 
 The GSE Finetuning library requires the following inputs:
 * `--model_weights` - string, optional. Provide the YOLOv5 variant that the user wants to finetune. Some common variants are YOLOv5 Small (yolov5s.pt) and YOLOv5 Medium (yolov5m.pt). Default value: `yolov5s.pt`.
-* `--img_size` - string, optional. Provide the size of input images for finetuning the model. The images will be resized if the original size is different from the size provided. Default value: `640`.
 * `--batch_size` - string, optional. Specify the batch size to train the model with. Default value: `16`.
 * `--num_epochs` - string, optional. Number of epochs to train the model for. Default value: `5`.
 

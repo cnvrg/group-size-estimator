@@ -17,8 +17,6 @@ The following list outlines the library's high level flow:
 This library assumes that the user has already finetuned a YOLOv5 model. This model will then be used to perform batch prediction. Connectors may be used to download the test dataset which should contain just images (.jpeg, .png etc.). 
 The GSE Batch Predict library requires the following inputs:
 * `--test_dir` - string, required. Provide the path to a directory containing test images.
-* `--img_size` - string, optional. Provide the size of input images for performing batch prediction. The images will be resized if the original size is different from the size provided. Default value: `640`.
-* `--confidence` - string, optional. Provide the confidence value (probability threshold) for making final predictions. Default value: `0.4`.
 
 ## Sample Command
 Refer to the following sample command:

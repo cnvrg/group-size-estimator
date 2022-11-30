@@ -35,11 +35,3 @@ arguments:
   - key: test_dir
     type: categorical
     values: []
-  - key: img_size
-    type: categorical
-    values:
-      - '640'
-  - key: confidence
-    type: categorical
-    values:
-      - '0.4'

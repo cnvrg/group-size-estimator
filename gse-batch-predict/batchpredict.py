@@ -39,22 +39,6 @@ def parse_parameters():  # pragma: no cover
         help="""--- Path to directory containing test images ---""",
     )
     parser.add_argument(
-        "--img_size",
-        action="store",
-        dest="img_size",
-        required=False,
-        default=640,
-        help="""--- Size of images for batch prediction. Images will be resized to this size ---""",
-    )
-    parser.add_argument(
-        "--confidence",
-        action="store",
-        dest="confidence",
-        required=False,
-        default=0.4,
-        help=""" The confidence value for making final predictions ---""",
-    )
-    parser.add_argument(
         "--output_dir",
         action="store",
         dest="output_dir",
@@ -117,7 +101,7 @@ def batchpredict_main():  # pragma: no cover
     # Run YOLOv5 detection script
     model_loc = config_dict["model_loc_new"]
     project_loc = args.output_dir + config_dict["project_name"]
-    command = f"python detect.py --weights {model_loc} --img {args.img_size} --conf {args.confidence} --source {args.test_dir} --project {project_loc} --save-txt --save-conf --hide-conf"
+    command = f"python detect.py --weights {model_loc} --source {args.test_dir} --project {project_loc} --save-txt --save-conf --hide-conf"
     os.system(command)
 
 

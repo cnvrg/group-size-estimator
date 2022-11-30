@@ -36,10 +36,6 @@ arguments:
     type: categorical
     values: 
       - yolov5s.pt
-  - key: img_size
-    type: categorical
-    values:
-      - '640'
   - key: batch_size
     type: categorical
     values:
