@@ -1,5 +1,5 @@
 ---
-title: GSE Finetuning # required on creation, a slug will be generated from the title? -> inference-library
+title: GSE Finetune # required on creation, a slug will be generated from the title? -> inference-library
 version: 1.0.0 # required
 description: "Finetune a pre-trained YOLOv5 model using custom data" # optional
 icon: python # optional

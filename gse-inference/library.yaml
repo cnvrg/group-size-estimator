@@ -16,7 +16,7 @@ kind: webservice # required
 requirements:
   cpu: 3.5
   memory: 7.5
-  gpu: 1
+  gpu: 0
   hpu: 0
 
 # This will replace the "docker_images" argument (?) need to work in cnvrg as well

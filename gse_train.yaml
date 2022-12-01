@@ -113,7 +113,7 @@ tasks:
     requirements:
       cpu: 3.5
       memory: 7.5
-      gpu: 1
+      gpu: 0
       hpu: 0
 
     image: python:3.8
@@ -150,7 +150,7 @@ tasks:
     requirements:
       cpu: 3.5
       memory: 7.5
-      gpu: 1
+      gpu: 0
       hpu: 0
 
     image: python:3.8
