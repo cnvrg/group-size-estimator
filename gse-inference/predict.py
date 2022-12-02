@@ -1,8 +1,13 @@
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).parent.resolve()))
+
 import base64
 import cv2
-import os
 import magic
 import numpy as np
+import os
 import yaml
 from detect import run
 
@@ -24,7 +29,9 @@ def find_model(trained_path, standalone_path):
 
 
 # Get location of object counter model
-model_path = find_model(config["trained_model_path"], config["standalone_model_path"])
+model_path = find_model(
+    config["trained_model_path"], lib_path + config["standalone_model_name"]
+)
 
 
 def predict(data):
@@ -41,7 +48,7 @@ def predict(data):
     file_ext = magic.from_buffer(decoded_img, mime=True).split("/")[-1]
     nparr = np.fromstring(decoded_img, np.uint8)
     test_img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
-    savepath = config["test_file_name"] + f".{file_ext}"
+    savepath = os.path.join(os.getcwd(), config["test_file_name"] + f".{file_ext}")
     cv2.imwrite(savepath, test_img)
 
     # Make predictions

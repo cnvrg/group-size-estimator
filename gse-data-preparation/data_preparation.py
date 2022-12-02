@@ -292,10 +292,10 @@ def create_dataset_config(class_list, output_dir, config_dict):  # pragma: no co
 
     # Define keys for paths to training and validation sets
     yaml_file.write(
-        f"{config_dict['train_key']}: {os.path.join(output_dir, config_dict['training_images_dir'])}/\n"
+        f"{config_dict['train_key']}: ./{config_dict['training_images_dir']}/\n"
     )
     yaml_file.write(
-        f"{config_dict['valid_key']}: {os.path.join(output_dir, config_dict['validation_images_dir'])}/\n"
+        f"{config_dict['valid_key']}: ./{config_dict['validation_images_dir']}/\n"
     )
 
     # Define keys for number of classes and class names
