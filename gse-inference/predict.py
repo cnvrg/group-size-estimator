@@ -45,28 +45,39 @@ def predict(data):
     # Define json response
     response = {}
     response["output"] = []
+    counter = 0
 
-    # Perform base 64 conversion on uploaded data
-    decoded_img = base64.b64decode(data["img"])
+    for image in data["img"]:
+        # Perform base 64 conversion on uploaded data
+        decoded_img = base64.b64decode(image)
+        counter += 1
 
-    # Convert buffer to numpy array and save uploaded image
-    file_ext = magic.from_buffer(decoded_img, mime=True).split("/")[-1]
-    nparr = np.fromstring(decoded_img, np.uint8)
-    test_img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
-    savepath = os.path.join(os.getcwd(), config["temp_file_name"] + f".{file_ext}")
-    cv2.imwrite(savepath, test_img)
+        # Convert buffer to numpy array and save uploaded image
+        file_ext = magic.from_buffer(decoded_img, mime=True).split("/")[-1]
+        nparr = np.fromstring(decoded_img, np.uint8)
+        test_img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
+        savepath = os.path.join(
+            os.getcwd(), config["temp_file_name"] + f"{counter}.{file_ext}"
+        )
+        cv2.imwrite(savepath, test_img)
 
-    # Make predictions
-    result = run(weights=model_path, source=savepath, save_conf=True, save_txt=True)
-    os.remove(savepath)
+        # Make predictions
+        result = run(weights=model_path, source=savepath, save_conf=True, save_txt=True)
+        os.remove(savepath)
 
-    # Create JSON response for image
-    for filename in result:
-        obj_info = result[filename][0]
-        obj_counts = result[filename][1]
-        for classname in obj_info:
-            response["output"] += obj_info[classname]
-            count_dict = {"object": classname, "object_count": obj_counts[classname]}
-            response["output"].append(count_dict)
+        # Create JSON response for image
+        for filename in result:
+            file_dict = {}
+            file_dict[filename] = []
+            obj_info = result[filename][0]
+            obj_counts = result[filename][1]
+            for classname in obj_info:
+                file_dict[filename] += obj_info[classname]
+                count_dict = {
+                    "object": classname,
+                    "object_count": obj_counts[classname],
+                }
+                file_dict[filename].append(count_dict)
+            response["output"].append(file_dict)
 
     return response
