@@ -119,7 +119,7 @@ tasks:
     image: python:3.8
     language: python3
     
-    accept_files: true
+    accept_files: false
     gunicorn_config:
       - key: workers
         value: '1'

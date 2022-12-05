@@ -138,6 +138,10 @@ def run(
     # Run inference
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
+
+    # Declare output dictionary for json response
+    result = {}
+
     for path, im, im0s, vid_cap, s in dataset:
         with dt[0]:
             im = torch.from_numpy(im).to(model.device)
@@ -182,14 +186,18 @@ def run(
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if save_crop else im0  # for save_crop
             annotator = Annotator(im0, line_width=line_thickness, example=str(names))
+            object_info = dict()
             object_counter = dict()
+            img_width = im0.shape[1]
+            img_height = im0.shape[0]
+
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
 
                 # Print results
                 for c in det[:, 5].unique():
-                    n = (det[:, 5] == c).sum()  # detections per class
+                    n = int((det[:, 5] == c).sum())  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
                     object_counter[names[int(c)]] = (
                         object_counter.get(names[int(c)], 0) + n
@@ -197,6 +205,8 @@ def run(
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
+                    detection = dict()
+
                     if save_txt:  # Write to file
                         xywh = (
                             (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn)
@@ -208,6 +218,20 @@ def run(
                         )  # label format
                         with open(f"{txt_path}.txt", "a") as f:
                             f.write(("%g " * len(line)).rstrip() % line + "\n")
+
+                        # Store detected object info
+                        detection["class"] = names[int(line[0])]
+                        detection["conf"] = round(float(conf), 2)
+                        detection["bbox"] = [
+                            int(line[1] * img_width),
+                            int(line[2] * img_height),
+                            int(line[3] * img_width),
+                            int(line[4] * img_height),
+                        ]
+
+                        if detection["class"] not in object_info:
+                            object_info[detection["class"]] = []
+                        object_info[detection["class"]].append(detection)
 
                     if save_img or save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
@@ -225,6 +249,8 @@ def run(
                             file=save_dir / "crops" / names[c] / f"{p.stem}.jpg",
                             BGR=True,
                         )
+
+            result[p.name] = [object_info, object_counter]
 
             # Add object counts to images
             annotator.show_counts(object_counter)
@@ -297,6 +323,8 @@ def run(
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
+
+    return result
 
 
 def parse_opt():

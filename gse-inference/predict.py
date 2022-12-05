@@ -8,6 +8,7 @@ import cv2
 import magic
 import numpy as np
 import os
+import shutil
 import yaml
 from detect import run
 
@@ -41,29 +42,31 @@ def predict(data):
     Returns:
         response: dictionary containing the prediction/results
     """
-    # Perfrom base 64 conversion on uploaded data
+    # Define json response
+    response = {}
+    response["output"] = []
+
+    # Perform base 64 conversion on uploaded data
     decoded_img = base64.b64decode(data["img"])
 
     # Convert buffer to numpy array and save uploaded image
     file_ext = magic.from_buffer(decoded_img, mime=True).split("/")[-1]
     nparr = np.fromstring(decoded_img, np.uint8)
     test_img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
-    savepath = os.path.join(os.getcwd(), config["test_file_name"] + f".{file_ext}")
+    savepath = os.path.join(os.getcwd(), config["temp_file_name"] + f".{file_ext}")
     cv2.imwrite(savepath, test_img)
 
     # Make predictions
-    result = run(weights=model_path, source=savepath, save_conf=True)
+    result = run(weights=model_path, source=savepath, save_conf=True, save_txt=True)
     os.remove(savepath)
 
-    # Create JSON response
-    response = {}
-    response["output"] = []
+    # Create JSON response for image
     for filename in result:
         obj_info = result[filename][0]
         obj_counts = result[filename][1]
         for classname in obj_info:
             response["output"] += obj_info[classname]
             count_dict = {"object": classname, "object_count": obj_counts[classname]}
-            response.append(count_dict)
+            response["output"].append(count_dict)
 
     return response

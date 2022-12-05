@@ -29,7 +29,7 @@ arguments:
   gunicorn_config:
     - key: workers
       value: '1'
-  accept_files: true # whether the endpoint accepts files as inputs
+  accept_files: false # whether the endpoint accepts files as inputs
   file_name: predict.py # the entrypoint file name
   function_name: predict # the entrypoint function
   prep_file: '' # preprocess file name
