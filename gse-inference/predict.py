@@ -45,6 +45,10 @@ def predict(data):
     # Define json response
     response = {}
     response["output"] = []
+
+    # Create directory to store images and define  counter
+    img_dir = os.path.join(os.getcwd(), config["test_img_dir"])
+    os.mkdir(img_dir)
     counter = 0
 
     for image in data["img"]:
@@ -57,27 +61,27 @@ def predict(data):
         nparr = np.fromstring(decoded_img, np.uint8)
         test_img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
         savepath = os.path.join(
-            os.getcwd(), config["temp_file_name"] + f"{counter}.{file_ext}"
+            img_dir, config["test_file_prefix"] + f"{counter}.{file_ext}"
         )
         cv2.imwrite(savepath, test_img)
 
-        # Make predictions
-        result = run(weights=model_path, source=savepath, save_conf=True, save_txt=True)
-        os.remove(savepath)
+    # Make predictions
+    result = run(weights=model_path, source=img_dir, save_conf=True, save_txt=True)
+    shutil.rmtree(img_dir)
 
-        # Create JSON response for image
-        for filename in result:
-            file_dict = {}
-            file_dict[filename] = []
-            obj_info = result[filename][0]
-            obj_counts = result[filename][1]
-            for classname in obj_info:
-                file_dict[filename] += obj_info[classname]
-                count_dict = {
-                    "object": classname,
-                    "object_count": obj_counts[classname],
-                }
-                file_dict[filename].append(count_dict)
-            response["output"].append(file_dict)
+    # Create JSON response for image
+    for filename in result:
+        file_dict = {}
+        file_dict[filename] = []
+        obj_info = result[filename][0]
+        obj_counts = result[filename][1]
+        for classname in obj_info:
+            file_dict[filename] += obj_info[classname]
+            count_dict = {
+                "object": classname,
+                "object_count": obj_counts[classname],
+            }
+            file_dict[filename].append(count_dict)
+        response["output"].append(file_dict)
 
     return response

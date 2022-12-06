@@ -20,11 +20,32 @@ curl -X POST \
     {link to your deployed endpoint} \
 -H 'Cnvrg-Api-Key: {your_api_key}' \
 -H 'Content-Type: application/json' \
--d '{"vars": ""}'
+-d '{"input_params": {"img": file}}'
 ```
 
 ## Output
 The sample output looks as follows:
 ```bash
-{"output": ""}
+{
+  "output": [
+    {
+      "test1.jpeg": [
+        {
+          "bbox": [
+            527,
+            433,
+            1019,
+            678
+          ],
+          "class": "person",
+          "conf": 0.65
+        },
+        {
+          "object": "person",
+          "object_count": 1
+        }
+      ]
+    }
+  ]
+}
 ```
