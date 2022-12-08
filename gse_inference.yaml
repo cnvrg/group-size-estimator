@@ -48,9 +48,9 @@ tasks:
     prep_file: '' # preprocess file name
     prep_function: '' # preprocess function
     input_example:
-      img: file
+      media: file
     input_schema:
-      img: file
+      media: file
     output_schema: {}
 
 relations: []

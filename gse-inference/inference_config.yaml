@@ -1,4 +1,3 @@
 trained_model_path: /input/finetuning/runs/train/exp/weights/best.pt
 standalone_model_name: yolov5s.pt
-test_img_dir: images
-test_file_prefix: test
+test_file_name: test

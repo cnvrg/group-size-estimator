@@ -190,6 +190,18 @@ def run(
             object_counter = dict()
             img_width = im0.shape[1]
             img_height = im0.shape[0]
+            img_name = p.name
+            if p.name.split(".")[-1] in [
+                "mov",
+                "avi",
+                "mp4",
+                "mpg",
+                "mpeg",
+                "m4v",
+                "wmv",
+                "mkv",
+            ]:
+                img_name = p.name.split(".")[0] + f"_frame{seen}.jpg"
 
             if len(det):
                 # Rescale boxes from img_size to im0 size
@@ -250,7 +262,7 @@ def run(
                             BGR=True,
                         )
 
-            result[p.name] = [object_info, object_counter]
+            result[img_name] = [object_info, object_counter]
 
             # Add object counts to images
             annotator.show_counts(object_counter)

@@ -8,3 +8,5 @@ __pycache__
 *autoload.py
 *.tar.gz
 *.csv
+endpoint.py
+*.mp4

@@ -34,6 +34,10 @@ model_path = find_model(
     config["trained_model_path"], lib_path + config["standalone_model_name"]
 )
 
+# Specify acceptable file formats
+img_formats = ["jpg", "jpeg", "png"]
+vid_formats = ["mov", "avi", "mp4", "mpg", "mpeg", "m4v", "wmv", "mkv"]
+
 
 def predict(data):
     """Performs object counting on an image provided as input to the webservice
@@ -46,42 +50,54 @@ def predict(data):
     response = {}
     response["output"] = []
 
-    # Create directory to store images and define  counter
-    img_dir = os.path.join(os.getcwd(), config["test_img_dir"])
-    os.mkdir(img_dir)
-    counter = 0
+    # Perform base 64 conversion on uploaded data
+    decoded = base64.b64decode(data["media"][0])
 
-    for image in data["img"]:
-        # Perform base 64 conversion on uploaded data
-        decoded_img = base64.b64decode(image)
-        counter += 1
+    # Get file extension and define save path for test image/video
+    file_ext = magic.from_buffer(decoded, mime=True).split("/")[-1]
+    savepath = config["test_file_name"] + f".{file_ext}"
 
-        # Convert buffer to numpy array and save uploaded image
-        file_ext = magic.from_buffer(decoded_img, mime=True).split("/")[-1]
-        nparr = np.fromstring(decoded_img, np.uint8)
+    # Process images and videos depending on file format
+    if file_ext in img_formats:
+        nparr = np.fromstring(decoded, np.uint8)
         test_img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
-        savepath = os.path.join(
-            img_dir, config["test_file_prefix"] + f"{counter}.{file_ext}"
-        )
         cv2.imwrite(savepath, test_img)
 
-    # Make predictions
-    result = run(weights=model_path, source=img_dir, save_conf=True, save_txt=True)
-    shutil.rmtree(img_dir)
+        # Make predictions
+        result = run(weights=model_path, source=savepath, save_conf=True, save_txt=True)
 
-    # Create JSON response for image
-    for filename in result:
-        file_dict = {}
-        file_dict[filename] = []
-        obj_info = result[filename][0]
-        obj_counts = result[filename][1]
+        # create json response for image
+        obj_info = result[savepath][0]
+        obj_counts = result[savepath][1]
         for classname in obj_info:
-            file_dict[filename] += obj_info[classname]
+            response["output"] += obj_info[classname]
             count_dict = {
                 "object": classname,
                 "object_count": obj_counts[classname],
             }
-            file_dict[filename].append(count_dict)
-        response["output"].append(file_dict)
+            response["output"].append(count_dict)
+
+    elif file_ext in vid_formats:
+        fh = open(savepath, "wb")
+        fh.write(decoded)
+        fh.close()
+
+        # Make predictions
+        result = run(weights=model_path, source=savepath, save_conf=True, save_txt=True)
+
+        # create json response for video
+        for filename in result:
+            file_dict = {}
+            file_dict[filename] = []
+            obj_info = result[filename][0]
+            obj_counts = result[filename][1]
+            for classname in obj_info:
+                file_dict[filename] += obj_info[classname]
+                count_dict = {
+                    "object": classname,
+                    "object_count": obj_counts[classname],
+                }
+                file_dict[filename].append(count_dict)
+            response["output"].append(file_dict)
 
     return response
