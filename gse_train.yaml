@@ -29,8 +29,8 @@ tasks:
     command: python data_preparation.py
 
     requirements:
-      cpu: 3.5
-      memory: 7.5
+      cpu: 2
+      memory: 2
       gpu: 0
       hpu: 0
     
@@ -72,8 +72,8 @@ tasks:
     command: python finetune.py
 
     requirements:
-      cpu: 3.5
-      memory: 7.5
+      cpu: 2
+      memory: 2
       gpu: 1
       hpu: 0
 
@@ -111,8 +111,8 @@ tasks:
     kind: webservice
 
     requirements:
-      cpu: 3.5
-      memory: 7.5
+      cpu: 2
+      memory: 2
       gpu: 0
       hpu: 0
 
@@ -128,9 +128,9 @@ tasks:
     prep_file: '' # preprocess file name
     prep_function: '' # preprocess function
     input_example:
-      img: file
+      media: file
     input_schema:
-      img: file
+      media: file
     output_schema: {}
 
   - title: Batch Predict
@@ -148,8 +148,8 @@ tasks:
     command: python batchpredict.py
 
     requirements:
-      cpu: 3.5
-      memory: 7.5
+      cpu: 2
+      memory: 2
       gpu: 0
       hpu: 0
 

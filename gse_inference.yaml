@@ -31,8 +31,8 @@ tasks:
     kind: webservice
 
     requirements:
-      cpu: 3.5
-      memory: 7.5
+      cpu: 2
+      memory: 2
       gpu: 0
       hpu: 0
     
