@@ -1,3 +1,6 @@
 images_loc: ../data
 labels_loc: ../data
 config_loc: ../data/dataset.yaml
+test_command: "python ../train.py --weights yolov5s.pt --batch 2 --epochs 1 --data unittest_dataset.yaml --project runs/train"
+run_dir: runs/train/exp
+model_loc: ./yolov5s.pt

@@ -1,7 +1,4 @@
 !.gitignore
-*images
-*labels
-*dataset.yaml
 __pycache__
 *runs
 *.pt
@@ -10,4 +7,4 @@ __pycache__
 *.csv
 endpoint.py
 *.mp4
-*.jpg
+*.cache
