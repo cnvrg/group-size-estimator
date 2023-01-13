@@ -8,7 +8,6 @@ import cv2
 import magic
 import numpy as np
 import os
-import shutil
 import yaml
 from detect import run
 
