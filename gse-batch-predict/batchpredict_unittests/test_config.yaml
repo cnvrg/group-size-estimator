@@ -1,1 +1,4 @@
 model_loc: /models_dir/best.pt
+test_command: "python ../detect.py --weights yolov5s.pt --source images/ --project runs/detect --save-txt --save-conf --hide-conf"
+yolo_loc: yolov5s.pt
+run_dir: runs/detect/exp
