@@ -76,5 +76,5 @@ class TestBatchPredict(unittest.TestCase):
         shutil.rmtree("runs")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -175,5 +175,5 @@ class TrainValidSplit(TestDataPreparation):
         self.assertEqual(val_lbls, self.valid_lbls)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
