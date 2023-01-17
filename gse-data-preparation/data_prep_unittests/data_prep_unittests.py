@@ -173,3 +173,7 @@ class TrainValidSplit(TestDataPreparation):
         self.assertEqual(val_imgs, self.valid_imgs)
         self.assertEqual(train_lbls, self.train_lbls)
         self.assertEqual(val_lbls, self.valid_lbls)
+
+
+if __name__ == '__main__':
+    unittest.main()
