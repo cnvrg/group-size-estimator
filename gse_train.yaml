@@ -46,14 +46,14 @@ tasks:
           - 'http://s3.amazonaws.com download'
       - key: bucketname
         type: 'categorical'
-        values: ['libhub-readme']
+        values: []
       - key: localdir
         type: 'categorical'
         values:
           - '/cnvrg'
       - key: prefix
         type: 'categorical'
-        values: ['gse_data/']
+        values: []
 
   - title: Data Preparation
     top: 400
@@ -83,16 +83,20 @@ tasks:
     params:
       - key: data_dir
         type: categorical
-        values: []
+        values:
+          - 'None'
       - key: image_dir
         type: categorical
-        values: []
+        values: 
+          - '/input/s3_data_connector/images_dir_loc'
       - key: label_dir
         type: categorical
-        values: []
+        values:
+          - '/input/s3_data_connector/labels_dir_loc'
       - key: class_file
         type: categorical
-        values: []
+        values:
+          - '/input/s3_data_connector/classes_file_loc'
       - key: valid_size
         type: categorical
         values: 
@@ -202,7 +206,8 @@ tasks:
     params:
       - key: test_dir
         type: categorical
-        values: []
+        values: 
+          - '/input/s3_batch_connector/images_dir_loc'
 
   - title: S3 Batch Connector
     top: 600
@@ -236,14 +241,14 @@ tasks:
           - 'http://s3.amazonaws.com download'
       - key: bucketname
         type: 'categorical'
-        values: ['libhub-readme']
+        values: []
       - key: localdir
         type: 'categorical'
         values:
           - '/cnvrg'
       - key: prefix
         type: 'categorical'
-        values: ['gse_data/']
+        values: []
 
 relations:
   - from: S3 Data Connector
