@@ -1,0 +1,2 @@
+model_loc: /input/finetuning/runs/train/exp/weights/best.pt
+project_name: /runs/detect

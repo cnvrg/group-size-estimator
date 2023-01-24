@@ -1,0 +1,4 @@
+train: finetune_unittests/images/training/
+val: finetune_unittests/images/validation/
+nc: 2
+names: ['with mask', 'without mask']

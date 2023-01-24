@@ -1,0 +1,56 @@
+---
+title: GSE Inference # Required on creation, replaces the "flow" parameter
+version: 1.0.0 # Required
+description: "Perform object counting on a test image" # Optional for showing summary on UI
+long_description: "Detect and count objects of each class/category in a test image"
+
+# Optional properties for crediting authors
+author: "cnvrg"
+author_email: "libhub@cnvrg.io"
+
+# At least one tag [inference, training, data] must be present
+tags:
+  - inference
+
+# List of tasks (libraries)
+tasks:
+
+  - title: Inference
+    top: 400
+    left: 900
+
+    # Type must be according to the flow task conventions (data, exec, deploy)
+    type: deploy
+
+    # The library data
+    library: gse-inference
+    library_version: 1.0.0
+
+    # The flattened library parameters (in this case we have inference library)
+    command: python3 predict.py
+    kind: webservice
+
+    requirements:
+      cpu: 2
+      memory: 2
+      gpu: 0
+      hpu: 0
+    
+    image: python:3.8
+    language: python3
+
+    accept_files: false
+    gunicorn_config:
+      - key: workers
+        value: '1'
+    file_name: predict.py # the entrypoint file name
+    function_name: predict # the entrypoint function
+    prep_file: '' # preprocess file name
+    prep_function: '' # preprocess function
+    input_example:
+      media: file
+    input_schema:
+      media: file
+    output_schema: {}
+
+relations: []

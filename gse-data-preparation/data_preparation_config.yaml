@@ -1,0 +1,9 @@
+training_images_dir: images/training
+training_labels_dir: labels/training
+validation_images_dir: images/validation
+validation_labels_dir: labels/validation
+dataset_yaml_file: dataset.yaml
+train_key: train
+valid_key: val
+num_classes: nc
+class_names: names
