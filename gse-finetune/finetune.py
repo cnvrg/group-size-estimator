@@ -28,6 +28,17 @@ class ConfigNotFoundError(Exception):
         return f"ConfigNotFoundError: The dataset config file does not exist at {self.config_path}. Please check the previous library!"
 
 
+class CommandFailedError(Exception):
+    """Raise if os.system() returns non-zero exit code"""
+
+    def __init__(self, exit_code):
+        super().__init__(exit_code)
+        self.exit_code = exit_code
+
+    def __str__(self):
+        return f"CommandFailedError: The os command returned exit code {self.exit_code}. Exit code cannot be non-zero!"
+
+
 def parse_parameters():  # pragma: no cover
     """Command line parser"""
     parser = argparse.ArgumentParser(description="""YOLOv5 Finetuning""")
@@ -118,7 +129,9 @@ def finetune_main():  # pragma: no cover
     dataset_yaml_loc = config_dict["config_loc_new"]
     project_loc = args.output_dir + config_dict["project_name"]
     command = f"python train.py --weights {args.model_weights} --batch {args.batch_size} --epochs {args.num_epochs} --data {dataset_yaml_loc} --project {project_loc}"
-    os.system(command)
+    exit_code = os.system(command)
+    if exit_code != 0:
+        raise CommandFailedError(exit_code)
 
 
 if __name__ == "__main__":

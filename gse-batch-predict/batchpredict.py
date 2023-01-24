@@ -16,6 +16,17 @@ class ModelNotFoundError(Exception):
         return f"ModelNotFoundError: The model file does not exist at {self.model_path}. Please check the previous library!"
 
 
+class CommandFailedError(Exception):
+    """Raise if os.system() returns non-zero exit code"""
+
+    def __init__(self, exit_code):
+        super().__init__(exit_code)
+        self.exit_code = exit_code
+
+    def __str__(self):
+        return f"CommandFailedError: The os command returned exit code {self.exit_code}. Exit code cannot be non-zero!"
+
+
 def parse_parameters():  # pragma: no cover
     """Command line parser"""
     parser = argparse.ArgumentParser(description="""Batch Predict""")
@@ -68,7 +79,9 @@ def batchpredict_main():  # pragma: no cover
     model_loc = config_dict["model_loc"]
     project_loc = args.output_dir + config_dict["project_name"]
     command = f"python detect.py --weights {model_loc} --source {args.test_dir} --project {project_loc} --save-txt --save-conf --hide-conf"
-    os.system(command)
+    exit_code = os.system(command)
+    if exit_code != 0:
+        raise CommandFailedError(exit_code)
 
 
 if __name__ == "__main__":
