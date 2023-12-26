@@ -67,16 +67,14 @@ tasks:
           - 'http://s3.amazonaws.com download'
       - key: bucketname
         type: 'categorical'
-        values: 
-          - 'libhub-readme'
+        values: []
       - key: localdir
         type: 'categorical'
         values:
           - '/cnvrg'
       - key: prefix
         type: 'categorical'
-        values: 
-          - 'gse_data/'
+        values: []
 
   - title: Data Preparation
     top: 400
@@ -105,23 +103,23 @@ tasks:
     # Params in the blueprint yaml can be used to override the arguments in the library.
     params:
       - key: data_dir
-        type: 'categorical'
+        type: categorical
         values:
           - 'None'
       - key: image_dir
-        type: 'categorical'
+        type: categorical
         values: 
-          - '/input/s3_data_connector/gse_data/images/'
+          - '/input/s3_data_connector/images_dir_loc'
       - key: label_dir
-        type: 'categorical'
+        type: categorical
         values:
-          - '/input/s3_data_connector/gse_data/labels/'
+          - '/input/s3_data_connector/labels_dir_loc'
       - key: class_file
-        type: 'categorical'
+        type: categorical
         values:
-          - '/input/s3_data_connector/gse_data/classes.csv'
+          - '/input/s3_data_connector/classes_file_loc'
       - key: valid_size
-        type: 'categorical'
+        type: categorical
         values: 
           - '0.3'
 
@@ -152,15 +150,15 @@ tasks:
     # Params in the blueprint yaml can be used to override the arguments in the library.
     params:
       - key: model_weights
-        type: 'categorical'
+        type: categorical
         values: 
           - yolov5s.pt
       - key: batch_size
-        type: 'categorical'
+        type: categorical
         values:
           - '16'
       - key: num_epochs
-        type: 'categorical'
+        type: categorical
         values:
           - '5'
 
@@ -176,7 +174,6 @@ tasks:
     library_version: 1.0.0
 
     # The flattened library parameters (in this case we have inference library)
-    command: python3 predict.py
     kind: webservice
 
     requirements:
@@ -188,7 +185,7 @@ tasks:
     image: python:3.8
     language: python3
     
-    accept_files: true
+    accept_files: false
     gunicorn_config:
       - key: workers
         value: '1'
@@ -197,9 +194,9 @@ tasks:
     prep_file: '' # preprocess file name
     prep_function: '' # preprocess function
     input_example:
-      img: file
+      media: file
     input_schema:
-      img: file
+      media: file
     output_schema: {}
 
   - title: Batch Predict
@@ -229,9 +226,9 @@ tasks:
     # Params in the blueprint yaml can be used to override the arguments in the library.
     params:
       - key: test_dir
-        type: 'categorical'
+        type: categorical
         values: 
-          - '/input/s3_batch_connector/gse_data/images_bp/validation'  
+          - '/input/s3_batch_connector/images_dir_loc'
 
   - title: S3 Batch Connector
     top: 600
@@ -265,16 +262,14 @@ tasks:
           - 'http://s3.amazonaws.com download'
       - key: bucketname
         type: 'categorical'
-        values: 
-          - 'libhub-readme'
+        values: []
       - key: localdir
         type: 'categorical'
         values:
           - '/cnvrg'
       - key: prefix
         type: 'categorical'
-        values: 
-          - 'gse_data/'
+        values: []
 
 relations:
   - from: S3 Data Connector
